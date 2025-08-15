@@ -1,45 +1,32 @@
-name: Build Chrome Proxy Manager
+name: Build Chrome Proxy Tool
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: # Cho phép chạy thủ công
 
 jobs:
-  build-windows:
+  build:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install selenium pyinstaller
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install pyinstaller selenium
 
-      - name: Build EXE
-        run: |
-          pyinstaller --noconfirm --onefile --windowed --name "Chrome_Proxy_Manager" app.py
+    - name: Build exe
+      run: |
+        python build_exe.py
 
-      - name: Prepare release folder
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path release | Out-Null
-          Copy-Item "dist/Chrome_Proxy_Manager.exe" release/
-          if (Test-Path "profiles.json") { Copy-Item "profiles.json" release/ }
-          if (Test-Path "proxies.txt") { Copy-Item "proxies.txt" release/ }
-
-      - name: Zip artifacts
-        shell: pwsh
-        run: |
-          Compress-Archive -Path release/* -DestinationPath Chrome_Proxy_Manager.zip -Force
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Chrome_Proxy_Manager
-          path: Chrome_Proxy_Manager.zip
+    - name: Upload exe
+      uses: actions/upload-artifact@v3
+      with:
+        name: ChromeProxyTool
+        path: dist/*.exe
