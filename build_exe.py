@@ -1,22 +1,19 @@
-import os
-import shutil
+import os, shutil
 import PyInstaller.__main__
 
-if os.path.exists("dist"):
-    shutil.rmtree("dist")
-if os.path.exists("build"):
-    shutil.rmtree("build")
-if os.path.exists("app.spec"):
-    os.remove("app.spec")
+# dọn build cũ
+for p in ["dist", "build", "main.spec"]:
+    if os.path.isdir(p):
+        shutil.rmtree(p, ignore_errors=True)
+    elif os.path.isfile(p):
+        os.remove(p)
 
 PyInstaller.__main__.run([
-    "app.py",
+    "main.py",
     "--onefile",
     "--noconsole",
-    "--add-data=driver/chromedriver.exe;driver",
     "--add-data=profiles.json;.",
     "--add-data=proxies.txt;.",
-    "--icon=None"
 ])
 
-print("✅ Build xong! File exe nằm trong thư mục dist/")
+print("✅ Build xong! File .exe ở thư mục dist/")
