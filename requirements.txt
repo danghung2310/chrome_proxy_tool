@@ -1,1 +1,3 @@
 selenium
+webdriver-manager
+selenium-authenticated-proxy
